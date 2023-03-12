@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "225382796193",
+    "project_id": "mythical-temple-368706",
+    "storage_bucket": "mythical-temple-368706.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:225382796193:android:d639b1c7aae270935819e0",
+        "android_client_info": {
+          "package_name": "com.example.cloude_firestore"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "225382796193-j5qnfn8eb3bl1aehtg7o1ss9gvnvvhk0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyChJAFNjj9mhlcCw3CzBaB7nEDwziSfDP4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "225382796193-j5qnfn8eb3bl1aehtg7o1ss9gvnvvhk0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
