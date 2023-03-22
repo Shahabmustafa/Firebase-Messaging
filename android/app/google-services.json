@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "225382796193",
-    "project_id": "mythical-temple-368706",
-    "storage_bucket": "mythical-temple-368706.appspot.com"
+    "project_number": "572410227041",
+    "project_id": "clever-passage-369216",
+    "storage_bucket": "clever-passage-369216.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:225382796193:android:d639b1c7aae270935819e0",
+        "mobilesdk_app_id": "1:572410227041:android:5adbdc3b5c5a1e9e103d20",
         "android_client_info": {
           "package_name": "com.example.cloude_firestore"
         }
       },
       "oauth_client": [
         {
-          "client_id": "225382796193-j5qnfn8eb3bl1aehtg7o1ss9gvnvvhk0.apps.googleusercontent.com",
+          "client_id": "572410227041-dl1ddb2nd1n6n66tash1dspukrpdijrv.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyChJAFNjj9mhlcCw3CzBaB7nEDwziSfDP4"
+          "current_key": "AIzaSyDWLnDIwIhwOBs_Dod5lzvE3UrUZ8Ijqh8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "225382796193-j5qnfn8eb3bl1aehtg7o1ss9gvnvvhk0.apps.googleusercontent.com",
+              "client_id": "572410227041-dl1ddb2nd1n6n66tash1dspukrpdijrv.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

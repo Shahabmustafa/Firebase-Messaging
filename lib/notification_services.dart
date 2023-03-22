@@ -1,97 +1,99 @@
-
 import 'dart:math';
-
+import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationServices{
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
+  // Mobile Request Notification Permissions
   void requestNotificationPermission()async{
-    NotificationSettings settings = await messaging.requestPermission(
+    NotificationSettings setting = await messaging.requestPermission(
       alert: true,
       announcement: true,
       badge: true,
       carPlay: true,
-      criticalAlert: true,
-      provisional: true,
       sound: true,
+      provisional: true,
+      criticalAlert: true,
     );
-    if(settings.authorizationStatus == AuthorizationStatus.authorized){
-      print('user granted permission');
-    }else if(settings.authorizationStatus == AuthorizationStatus.authorized){
-      print('user granted provisional permission');
+
+    if(setting.authorizationStatus == AuthorizationStatus.authorized){
+      print('User granted Permission');
+    }else if(setting.authorizationStatus == AuthorizationStatus.provisional){
+      print('User granted Provisional Permission');
     }else{
-      print('user granted denied permission');
+      AppSettings.openNotificationSettings();
+      print('User denied Permission');
     }
   }
-
   void initLocalNotification(BuildContext context,RemoteMessage message)async{
-    var androidInitializationSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
-    var iosInitializationSettings = DarwinInitializationSettings();
-    var initializationSetting = InitializationSettings(
-      android: androidInitializationSettings,
-      iOS: iosInitializationSettings,
+    var androidInitalizationSetting = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var iosInitalizationSetting = const DarwinInitializationSettings();
+    var initalizationSetting = InitializationSettings(
+      android: androidInitalizationSetting,
+      iOS: iosInitalizationSetting,
     );
     await _flutterLocalNotificationsPlugin.initialize(
-        initializationSetting,
+      initalizationSetting,
       onDidReceiveNotificationResponse: (payload){
 
       }
     );
   }
-
   void firebaseInit(){
-    FirebaseMessaging.onMessage.listen((message){
-      print(message.notification!.title.toString());
-      print(message.notification!.body.toString());
+    FirebaseMessaging.onMessage.listen((message) {
+      showNotification(message);
     });
   }
-
   Future<void> showNotification(RemoteMessage message)async{
-
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-      Random.secure().nextInt(100000).toString(),
-      'High Important Notification',
-      importance: Importance.max,
+        Random.secure().nextInt(100000).toString(),
+        'High Important Notification',
+      importance: Importance.max
     );
-
     AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       channel.id.toString(),
       channel.name.toString(),
-      channelDescription: 'your channel description',
+      channelDescription: 'High Important Notification',
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
     );
 
-    NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
+    DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
+      presentAlert: true,
+      presentBadge: true,
+      presentSound: true,
     );
 
-    Future.delayed(Duration.zero,(){
-      _flutterLocalNotificationsPlugin.show(
-          0,
-          message.notification!.title.toString(),
-          message.notification!.body.toString(),
-          notificationDetails
-      );
-    });
+    NotificationDetails notificationDetails = NotificationDetails(
+      android: androidNotificationDetails,
+      iOS: darwinNotificationDetails,
+    );
+    Future.delayed(Duration.zero,
+        _flutterLocalNotificationsPlugin.show(
+            0,
+            message.notification!.title.toString(),
+            message.notification!.body.toString(),
+            notificationDetails
+        ),
+    );
   }
-
-  Future<String> getDeviceToken()async{
+  // Get Device Token
+  Future<String?> getDeviceToken()async{
     String? token = await messaging.getToken();
-    return token!;
+    return token;
   }
 
-  void isTokenRefresh()async{
-    messaging.onTokenRefresh.listen((event){
-      event.toString();
+  // Token Refresh
+  Future<String?> isTokenRefresh()async{
+    messaging.onTokenRefresh.listen((event) {
+     event.toString();
+     print(event);
     });
   }
-
-
 }
