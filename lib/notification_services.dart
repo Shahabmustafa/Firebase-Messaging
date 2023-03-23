@@ -30,8 +30,9 @@ class NotificationServices{
       print('User denied Permission');
     }
   }
+
   void initLocalNotification(BuildContext context,RemoteMessage message)async{
-    var androidInitalizationSetting = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    var androidInitalizationSetting = const AndroidInitializationSettings('@drawable/ic_launcher');
     var iosInitalizationSetting = const DarwinInitializationSettings();
     var initalizationSetting = InitializationSettings(
       android: androidInitalizationSetting,
@@ -44,11 +45,15 @@ class NotificationServices{
       }
     );
   }
+
   void firebaseInit(){
     FirebaseMessaging.onMessage.listen((message) {
+      print(message.notification!.title.toString());
+      print(message.notification!.body.toString());
       showNotification(message);
     });
   }
+
   Future<void> showNotification(RemoteMessage message)async{
     AndroidNotificationChannel channel = AndroidNotificationChannel(
         Random.secure().nextInt(100000).toString(),
@@ -58,13 +63,13 @@ class NotificationServices{
     AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       channel.id.toString(),
       channel.name.toString(),
-      channelDescription: 'High Important Notification',
+      channelDescription: 'Your channel Description',
       importance: Importance.high,
       priority: Priority.high,
       ticker: 'ticker',
     );
 
-    DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
+    DarwinNotificationDetails darwinNotificationDetails = const DarwinNotificationDetails(
       presentAlert: true,
       presentBadge: true,
       presentSound: true,
@@ -74,15 +79,17 @@ class NotificationServices{
       android: androidNotificationDetails,
       iOS: darwinNotificationDetails,
     );
-    Future.delayed(Duration.zero,
-        _flutterLocalNotificationsPlugin.show(
-            0,
-            message.notification!.title.toString(),
-            message.notification!.body.toString(),
-            notificationDetails
-        ),
+    Future.delayed(Duration.zero,(){
+      _flutterLocalNotificationsPlugin.show(
+          0,
+          message.notification!.title.toString(),
+          message.notification!.body.toString(),
+          notificationDetails
+      );
+    }
     );
   }
+
   // Get Device Token
   Future<String?> getDeviceToken()async{
     String? token = await messaging.getToken();
