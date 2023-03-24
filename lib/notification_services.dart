@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:app_settings/app_settings.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationServices{
@@ -31,35 +32,39 @@ class NotificationServices{
     }
   }
 
+
   void initLocalNotification(BuildContext context,RemoteMessage message)async{
-    var androidInitalizationSetting = const AndroidInitializationSettings('@drawable/ic_launcher');
+    var androidInitalizationSetting = const AndroidInitializationSettings('mipmap/ic_launcher');
     var iosInitalizationSetting = const DarwinInitializationSettings();
     var initalizationSetting = InitializationSettings(
       android: androidInitalizationSetting,
       iOS: iosInitalizationSetting,
     );
     await _flutterLocalNotificationsPlugin.initialize(
-      initalizationSetting,
-      onDidReceiveNotificationResponse: (payload){
-
+        initalizationSetting,
+        onDidReceiveNotificationResponse: (payload){
       }
     );
   }
 
   void firebaseInit(){
     FirebaseMessaging.onMessage.listen((message) {
-      print(message.notification!.title.toString());
-      print(message.notification!.body.toString());
+      if(kDebugMode){
+        print(message.notification!.title.toString());
+        print(message.notification!.body.toString());
+      }
       showNotification(message);
     });
   }
 
   Future<void> showNotification(RemoteMessage message)async{
+
     AndroidNotificationChannel channel = AndroidNotificationChannel(
         Random.secure().nextInt(100000).toString(),
         'High Important Notification',
       importance: Importance.max
     );
+
     AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       channel.id.toString(),
       channel.name.toString(),
@@ -79,12 +84,13 @@ class NotificationServices{
       android: androidNotificationDetails,
       iOS: darwinNotificationDetails,
     );
+
     Future.delayed(Duration.zero,(){
       _flutterLocalNotificationsPlugin.show(
           0,
           message.notification!.title.toString(),
           message.notification!.body.toString(),
-          notificationDetails
+          notificationDetails,
       );
     }
     );
