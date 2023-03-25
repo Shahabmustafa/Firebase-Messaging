@@ -7,8 +7,8 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationServices{
 
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
 
   // Mobile Request Notification Permissions
   void requestNotificationPermission()async{
@@ -32,68 +32,69 @@ class NotificationServices{
     }
   }
 
-
-  void initLocalNotification(BuildContext context,RemoteMessage message)async{
-    var androidInitalizationSetting = const AndroidInitializationSettings('mipmap/ic_launcher');
-    var iosInitalizationSetting = const DarwinInitializationSettings();
-    var initalizationSetting = InitializationSettings(
-      android: androidInitalizationSetting,
-      iOS: iosInitalizationSetting,
-    );
-    await _flutterLocalNotificationsPlugin.initialize(
-        initalizationSetting,
-        onDidReceiveNotificationResponse: (payload){
-      }
-    );
+  void firebaseInit(){
+    FirebaseMessaging.onMessage.listen((event) {
+      print(event.notification!.title.toString());
+      print(event.notification!.body.toString());
+      showNotification(event);
+    });
   }
 
-  void firebaseInit(){
-    FirebaseMessaging.onMessage.listen((message) {
-      if(kDebugMode){
-        print(message.notification!.title.toString());
-        print(message.notification!.body.toString());
+  void initLocalNotification(BuildContext context,RemoteMessage message)async{
+    var androidInitializationSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
+    // var iosInitializationSettings = const DarwinInitializationSettings();
+
+    var initializationSetting = InitializationSettings(
+      android: androidInitializationSettings,
+      // iOS: iosInitializationSettings,
+    );
+    await _flutterLocalNotificationsPlugin.initialize(
+      initializationSetting,
+      onDidReceiveNotificationResponse: (payload){
+
       }
-      showNotification(message);
-    });
+    );
   }
 
   Future<void> showNotification(RemoteMessage message)async{
 
+
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-        Random.secure().nextInt(100000).toString(),
-        'High Important Notification',
-      importance: Importance.max
+      message.notification!.android!.channelId.toString(),
+      message.notification!.android!.channelId.toString() ,
+      importance: Importance.max  ,
+      showBadge: true ,
     );
 
     AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       channel.id.toString(),
-      channel.name.toString(),
-      channelDescription: 'Your channel Description',
+      channel.name.toString() ,
+      channelDescription: 'your channel description',
       importance: Importance.high,
-      priority: Priority.high,
-      ticker: 'ticker',
+      priority: Priority.high ,
+      ticker: 'ticker' ,
+      //  icon: largeIconPath
     );
 
-    DarwinNotificationDetails darwinNotificationDetails = const DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+    // const DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
+    //     presentAlert: true ,
+    //     presentBadge: true ,
+    //     presentSound: true
+    // ) ;
 
     NotificationDetails notificationDetails = NotificationDetails(
-      android: androidNotificationDetails,
-      iOS: darwinNotificationDetails,
+        android: androidNotificationDetails,
+        // iOS: darwinNotificationDetails
     );
 
-    Future.delayed(Duration.zero,(){
+    Future.delayed(Duration.zero , (){
       _flutterLocalNotificationsPlugin.show(
           0,
           message.notification!.title.toString(),
           message.notification!.body.toString(),
-          notificationDetails,
-      );
-    }
-    );
+          notificationDetails);
+    });
+
   }
 
   // Get Device Token
@@ -108,5 +109,10 @@ class NotificationServices{
      event.toString();
      print(event);
     });
+  }
+
+  void handleMessage(BuildContext context,RemoteMessage message){
+
+
   }
 }

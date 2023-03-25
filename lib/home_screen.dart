@@ -30,6 +30,10 @@ class _HomePageState extends State<HomePage> {
         title: Text('Home'),
         centerTitle: true,
       ),
+      body: Column(
+        children: [
+        ],
+      ),
     );
   }
 }
