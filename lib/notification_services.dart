@@ -33,42 +33,43 @@ class NotificationServices{
   }
 
   void firebaseInit(){
-    FirebaseMessaging.onMessage.listen((event) {
-      print(event.notification!.title.toString());
-      print(event.notification!.body.toString());
-      showNotification(event);
+    FirebaseMessaging.onMessage.listen((message) {
+      if (kDebugMode) {
+        print(message.notification!.title.toString());
+      }
+      if (kDebugMode) {
+        print(message.notification!.body.toString());
+      }
+      showNotification(message);
     });
   }
 
-  void initLocalNotification(BuildContext context,RemoteMessage message)async{
-    var androidInitializationSettings = const AndroidInitializationSettings('@mipmap/ic_launcher');
-    // var iosInitializationSettings = const DarwinInitializationSettings();
+  void initLocalNotification(BuildContext context)async{
+    var androidInitializationSettings = const AndroidInitializationSettings('@drawable/images');
+    var iosInitializationSettings = const DarwinInitializationSettings();
 
     var initializationSetting = InitializationSettings(
       android: androidInitializationSettings,
-      // iOS: iosInitializationSettings,
+      iOS: iosInitializationSettings,
     );
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSetting,
       onDidReceiveNotificationResponse: (payload){
-
       }
     );
   }
 
   Future<void> showNotification(RemoteMessage message)async{
-
-
     AndroidNotificationChannel channel = AndroidNotificationChannel(
-      message.notification!.android!.channelId.toString(),
-      message.notification!.android!.channelId.toString() ,
+      Random.secure().nextInt(100000).toString(),
+      'High Importance Notification',
       importance: Importance.max  ,
       showBadge: true ,
     );
 
     AndroidNotificationDetails androidNotificationDetails = AndroidNotificationDetails(
       channel.id.toString(),
-      channel.name.toString() ,
+      channel.id.toString() ,
       channelDescription: 'your channel description',
       importance: Importance.high,
       priority: Priority.high ,
@@ -76,15 +77,15 @@ class NotificationServices{
       //  icon: largeIconPath
     );
 
-    // const DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
-    //     presentAlert: true ,
-    //     presentBadge: true ,
-    //     presentSound: true
-    // ) ;
+    const DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
+        presentAlert: true,
+        presentBadge: true,
+        presentSound: true,
+    );
 
     NotificationDetails notificationDetails = NotificationDetails(
         android: androidNotificationDetails,
-        // iOS: darwinNotificationDetails
+        iOS: darwinNotificationDetails
     );
 
     Future.delayed(Duration.zero , (){
