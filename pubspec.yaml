@@ -40,6 +40,7 @@ dependencies:
   flutter_local_notifications: ^13.0.0
   app_settings: ^4.2.0
   firebase_analytics: ^10.1.6
+  http: ^0.13.5
 
 dev_dependencies:
   flutter_test:

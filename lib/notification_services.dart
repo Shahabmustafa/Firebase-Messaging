@@ -1,8 +1,11 @@
+import 'dart:io';
 import 'dart:math';
 import 'package:app_settings/app_settings.dart';
+import 'package:cloude_firestore/chat_massege.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 class NotificationServices{
@@ -32,19 +35,24 @@ class NotificationServices{
     }
   }
 
-  void firebaseInit(){
+  void firebaseInit(BuildContext context){
     FirebaseMessaging.onMessage.listen((message) {
-      if (kDebugMode) {
-        print(message.notification!.title.toString());
-      }
-      if (kDebugMode) {
-        print(message.notification!.body.toString());
-      }
-      showNotification(message);
+        if (kDebugMode) {
+          print(message.notification!.title.toString());
+          print(message.data.toString());
+          print(message.data['type']);
+          print(message.data['id']);
+          print(message.notification!.body.toString());
+        }
+        if(Platform.isAndroid){
+          initLocalNotification(context,message);
+          showNotification(message);
+        }
+        showNotification(message);
     });
   }
 
-  void initLocalNotification(BuildContext context)async{
+  void initLocalNotification(BuildContext context,RemoteMessage message)async{
     var androidInitializationSettings = const AndroidInitializationSettings('@drawable/images');
     var iosInitializationSettings = const DarwinInitializationSettings();
 
@@ -55,6 +63,7 @@ class NotificationServices{
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSetting,
       onDidReceiveNotificationResponse: (payload){
+        handleMessage(context, message);
       }
     );
   }
@@ -74,7 +83,7 @@ class NotificationServices{
       importance: Importance.high,
       priority: Priority.high ,
       ticker: 'ticker' ,
-      //  icon: largeIconPath
+      icon: '@drawable/images',
     );
 
     const DarwinNotificationDetails darwinNotificationDetails = DarwinNotificationDetails(
@@ -112,8 +121,23 @@ class NotificationServices{
     });
   }
 
+  Future<void> setupInteractMessage(BuildContext context)async{
+
+    RemoteMessage? initialMessage = await FirebaseMessaging.instance.getInitialMessage();
+
+    if(initialMessage != null){
+      handleMessage(context,initialMessage);
+    }
+    FirebaseMessaging.onMessageOpenedApp.listen((event) {
+      handleMessage(context, event);
+    });
+  }
+
   void handleMessage(BuildContext context,RemoteMessage message){
-
-
+    if(message.data['type'] == 'massage'){
+      Navigator.push(context, MaterialPageRoute(builder: (context) => ChatMessage(
+        id: message.data['id'],
+      )));
+    }
   }
 }
